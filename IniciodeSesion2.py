@@ -11,7 +11,7 @@ class IniciarSesion(QWidget):
         self.iniciarUI()
 
     def iniciarUI(self):
-        self.setFixedSize(400,170) #geometria de la ventana
+        self.setFixedSize(400,200) #geometria de la ventana
         self.setWindowTitle("Inicio de Sesion")
         self.iniciar_sesion()
         self.show()
@@ -20,7 +20,7 @@ class IniciarSesion(QWidget):
         self.estaloggeado = False #la persona no ha iniciado sesion
 
         #titulo
-        titulo = QLabel(self)
+        titulo = QLabel()
         titulo.setText("Inicio De Sesion")
         font = QFont()
         font.setPointSize(12)
@@ -28,25 +28,28 @@ class IniciarSesion(QWidget):
         titulo.setFont(font)
 
         #correo
-        correo_label = QLabel(self)
+        correo_label = QLabel()
         correo_label.setText("Correo: ")
 
-        self.correo_input = QLineEdit(self)
+        self.correo_input = QLineEdit()
 
         #contraseña
-        contrasenia_label = QLabel(self)
+        contrasenia_label = QLabel()
         contrasenia_label
         contrasenia_label.setText("Contraseña: ")
 
-        self.contrasenia_input = QLineEdit(self)
+        self.contrasenia_input = QLineEdit()
+        self.contrasenia_input.setEchoMode(
+            QLineEdit.EchoMode.Password
+        )
 
         #boton iniciar sesion
-        iniciar_boton = QPushButton(self)
+        iniciar_boton = QPushButton()
         iniciar_boton.setText("Ingresar")
             #conectar la interaccion con ingresar a la ventana principar
         iniciar_boton.clicked.connect(self.ingresar)
 
-        layout = QVBoxLayout(self)
+        layout = QVBoxLayout()
         layout.addWidget(titulo)
         layout.addWidget(correo_label)
         layout.addWidget(self.correo_input)
@@ -77,15 +80,15 @@ class IniciarSesion(QWidget):
                 self.close()
                 self.abrir_reserva()
 
-        except FileExistsError as x:
+        except FileNotFoundError as x:
             QMessageBox.warning(self, "Error Message",
-            "Datos de inicio de sesion no encontrados: {x}",
+            f"Datos de inicio de sesion no encontrados: {x}",
             QMessageBox.StandardButton.Close,
             QMessageBox.StandardButton.Close)
 
         except Exception as x:
             QMessageBox.warning(self, "Error Message",
-            "Error en la ejecucion: {x}",
+            f"Error en la ejecucion: {x}",
             QMessageBox.StandardButton.Close,
             QMessageBox.StandardButton.Close)    
     
