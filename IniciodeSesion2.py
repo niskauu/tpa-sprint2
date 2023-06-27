@@ -61,37 +61,27 @@ class IniciarSesion(QWidget):
 
     #manejo de usuario si existe o no
     def ingresar(self):
-        usuarios =[]
-        datos = f"{self.correo_input.text()},{self.contrasenia_input.text()}"
-
+        intento = f"{self.correo_input.text()},{self.contrasenia_input.text()}"
+        autorizado = False
         try:
-            archivo= open("Dataset/usuarios.csv","r")
-            lineas = archivo.readlines()
-
-            for linea in lineas:
-                usuarios.append(linea.strip("\n"))
-            
-            if datos in usuarios:
-                QMessageBox.information(self,"Inicio Sesion",
-                "Se ha iniciado sesion",
-                QMessageBox.StandardButton.Ok,
-                QMessageBox.StandardButton.Ok)
-                self.estaloggeado = True
-                self.close()
+            archivo_usuarios = open("Dataset/usuarios.csv", "r")
+            for linea in archivo_usuarios:
+                print(linea)
+                if linea == intento:
+                    autorizado = True
+            if autorizado == True:
+                #Funcion conectar con la otra ventana
                 self.abrir_reserva()
+                archivo_usuarios.close()
+                QMessageBox.information(self, "Informacion", "Se ha iniciado sesion", QMessageBox.StandardButton.Close,QMessageBox.StandardButton.Close)
+                self.hide()
+            else:
+                QMessageBox.warning(self, "Error", "Los datos son incorrectos", QMessageBox.StandardButton.Close, QMessageBox.StandardButton.Close)
+        except FileNotFoundError:
+            QMessageBox.warning(self, "Error", "El archivo usuarios.csv no existe.", QMessageBox.StandardButton.Close, QMessageBox.StandardButton.Close)
 
-        except FileNotFoundError as x:
-            QMessageBox.warning(self, "Error Message",
-            f"Datos de inicio de sesion no encontrados: {x}",
-            QMessageBox.StandardButton.Close,
-            QMessageBox.StandardButton.Close)
 
-        except Exception as x:
-            QMessageBox.warning(self, "Error Message",
-            f"Error en la ejecucion: {x}",
-            QMessageBox.StandardButton.Close,
-            QMessageBox.StandardButton.Close)    
-    
+        
     #se abre ventana de registro de reserva
     def abrir_reserva(self):
         self.abrir_ventana = Reserva()

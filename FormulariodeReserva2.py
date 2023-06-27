@@ -1,9 +1,8 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QHBoxLayout, QVBoxLayout,QGridLayout, QWidget, QLineEdit, QPushButton, QMessageBox, QLabel, QDateEdit, QCalendarWidget
+from PyQt6.QtWidgets import QApplication, QHBoxLayout, QVBoxLayout, QWidget, QLineEdit, QPushButton, QGridLayout, QLabel, QDateEdit, QCalendarWidget, QMessageBox
 from PyQt6.QtGui import QFont
-from PyQt6 import QtCore
 from datetime import date, timedelta
-
+from dateutil.relativedelta import relativedelta
 
 class Reserva(QWidget):
 
@@ -12,7 +11,7 @@ class Reserva(QWidget):
         self.iniciarUI()
     
     def iniciarUI(self):
-        self.setFixedSize(600, 500) #geometria de la ventana
+        self.setFixedSize(600, 400) #geometria de la ventana
         self.setWindowTitle("Formulario De Reserva de Excursion")
         self.reservar()
         self.show()
@@ -49,6 +48,9 @@ class Reserva(QWidget):
         fecha_nacimiento = QLabel()
         fecha_nacimiento.setText("Fecha de Nacimiento: ")
         self.fecha_nacimiento = QDateEdit()
+        self.fecha_nacimiento.setCalendarPopup(True)
+        self.fecha_nacimiento.setMinimumDate(date.today()-relativedelta(years=100))
+        self.fecha_nacimiento.setMaximumDate(date.today()-relativedelta(years=18))
 
         #telefono
         telefono_label = QLabel()
@@ -105,19 +107,36 @@ class Reserva(QWidget):
         layouts.addLayout(layout_labels2)
         layouts.addLayout(layout_input2)
 
+        fecha_inicio_layout = QGridLayout()
+        fecha_inicio_layout.addWidget(fecha_inicio,0,1)
+        fecha_inicio_layout.addWidget(self.fecha_inicio,1,1)
+
+        fecha_inicio_widget = QWidget()
+        fecha_inicio_widget.setLayout(fecha_inicio_layout)
+
         layout_main.addWidget(titulo)
         layout_main.addLayout(layouts)
-        layout_main.addWidget(fecha_inicio)
-        layout_main.addWidget(self.fecha_inicio)
+        layout_main.addWidget(fecha_inicio_widget)
         layout_main.addWidget(boton)
 
         self.setLayout(layout_main)
 
+    def func_aux(self):
+        return True
     #guarda datos
     def guardar_reserva(self):
-        pass
 
-if __name__ == "__main__":    
-    app = QApplication(sys.argv)
-    iniciar = Reserva()
-    sys.exit(app.exec())
+        if self.nombre_input.isModified() == True and self.apellido_input.isModified() == True and self.rut_input.isModified() == True and self.telefono_input.isModified() == True and self.email_input.isModified() == True:
+            #guardar
+            archivo = open("Dataset/reserva.csv", "a")
+            fecha_inicio_temp = self.fecha_inicio.selectedDate().toPyDate()
+            
+            datos = f"{self.nombre_input.text()},{self.apellido_input.text()},{self.rut_input.text()},{self.fecha_nacimiento.text()},{self.telefono_input.text()},{self.email_input.text()},{fecha_inicio_temp.strftime('%d-%m-%Y')}\n"
+            archivo.write(datos)
+            archivo.close()
+        else:
+            QMessageBox.warning(self,"Error", "No puede dejar campos vacios", QMessageBox.StandardButton.Close, QMessageBox.StandardButton.Close)
+# if __name__ == "__main__":    
+#     app = QApplication(sys.argv)
+#     iniciar = Reserva()
+#     sys.exit(app.exec())
